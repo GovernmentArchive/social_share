@@ -145,6 +145,8 @@ function theme_social_share_link($variables) {
 
   // urlencode replacement items:
   foreach($replacements as $k => $v) {
+    $v = str_replace('\r\n', "\r\n", $v);
+    $v = str_replace('%0A', "\r\n", $v);
     $replacements[$k] = rawurlencode(decode_entities($v));
   }
 
