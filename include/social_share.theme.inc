@@ -152,7 +152,9 @@ function theme_social_share_link($variables) {
 
   $link_options = array('attributes' => array('class' => 'social-share-'. str_replace('_', '-', $network['machine_name']), 'title' => $network['human_name']));
   if (variable_get('social_share_new_window', 0)) {
-    $link_options['attributes']['target'] = '_blank';
+    if ($network['machine_name'] != 'mailto') {
+      $link_options['attributes']['target'] = '_blank';
+    }
   }
 
   $link = array(
