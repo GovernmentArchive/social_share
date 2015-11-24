@@ -144,8 +144,8 @@ function social_share_preprocess_node(&$variables) {
   if (!empty($facebook_app_id) && $sharing_is_enabled && $facebook_link_is_enabled) {
     $absolute_node_url = url(ltrim($node_url, '/'), array('absolute' => TRUE));
     $selector = '.social-share-node-' . $variables['nid'] . ' .social-share-facebook';
-    $inline_js = _social_share_facebook_override_script($selector, $absolute_node_url);
-    drupal_add_js($inline_js, array('type' => 'inline'));
+
+    social_share_collect_js(_social_share_facebook_override_script($selector, $absolute_node_url));
   }
 }
 
@@ -159,6 +159,18 @@ function social_share_preprocess_page(&$variables) {
   if (!empty($facebook_app_id)) {
     drupal_add_js(array('socialShare' => array('appID' => $facebook_app_id)), 'setting');
     drupal_add_js(drupal_get_path('module', 'social_share') . '/js/social_share_facebook_sdk.js', 'file');
+  }
+
+  $inline_js = social_share_collect_js();
+  if ($inline_js != '') {
+    $options = array(
+      'type' => 'inline',
+      'scope' => 'footer',
+      'group' => JS_DEFAULT,
+      'requires_jquery' => TRUE,
+      'defer' => TRUE,
+    );
+    drupal_add_js($inline_js, $options);
   }
 }
 
@@ -581,4 +593,19 @@ function _social_share_facebook_override_script($selector, $abs_url = NULL) {
             . '}); ';
 
   return $listener;
+}
+
+/**
+ * Collect JS data for page.
+ * @param string $data
+ *   JS to concat, if NULL returns JS data.
+ * @return string
+ *   JS concatenated data.
+ */
+function social_share_collect_js($data = NULL) {
+  $js = &drupal_static(__FUNCTION__);
+  if ($data == NULL) {
+    return $js;
+  }
+  $js .= $data;
 }
